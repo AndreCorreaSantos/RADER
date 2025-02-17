@@ -11,6 +11,5 @@ public class SetBody : MonoBehaviour
         var drive = body.xDrive;
         drive.target = value;
         body.xDrive = drive;
-        Debug.Log("called and jointAngle: " + value);
     }
 }

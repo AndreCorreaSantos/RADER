@@ -95,7 +95,7 @@ public class ProcessUrdf : MonoBehaviour
             obj.name = name.Replace("link", "joint");
         }
         // Process the current object
-        RemoveAndModifyComponents(obj);
+        ModifyComponents(obj);
         
         // Recursively process each child
         foreach (Transform child in obj.transform)
@@ -104,7 +104,7 @@ public class ProcessUrdf : MonoBehaviour
         }
     }
 
-    void RemoveAndModifyComponents(GameObject obj)
+    void ModifyComponents(GameObject obj) 
     {
         var scripts = new List<MonoBehaviour>(obj.GetComponents<MonoBehaviour>());
         bool fixedJoint = false;
@@ -141,16 +141,6 @@ public class ProcessUrdf : MonoBehaviour
                 }
             }
             
-            // Do not delete scripts of type RobotManager
-            if (script.GetType().Name == "RobotManager") continue;
-
-            // Do not delete scripts that inherit from IKSolver
-            if (script.GetType().IsSubclassOf(typeof(IKSolver))) continue;
-
-            // Do not delete CollisionHaptics scripts
-            if (script.GetType().Name == "CollisionHaptics") continue;
-
-            // DestroyImmediate(script); // REVIEW; For now keeping all urdf related scripts.
         }
 
         var articulationBody = obj.GetComponent<ArticulationBody>();
@@ -167,15 +157,7 @@ public class ProcessUrdf : MonoBehaviour
                 isClampedMotion = false;
                 jointLimit = new Tuple<float, float>(0, 360);
             }
-            
-            // DestroyImmediate(articulationBody); // REVIEW; no longer removing articulation bodies
 
-            // // add rigidbody
-            // var rb = obj.AddComponent<Rigidbody>();
-            // rb.mass = 1.0f;
-            // rb.useGravity = false;
-            // rb.isKinematic = true;
-            // if fixedJoint we dont add XRGrabInteractable
             if(!fixedJoint)
             {
                 GameObject originalParent = obj.transform.parent.gameObject;
@@ -274,11 +256,18 @@ public class ProcessUrdf : MonoBehaviour
         jointNames.Reverse();
     }
 
+    public void setJoint(ArticulationBody body,float value){ // joint, value to set 
+        ArticulationDrive drive = body.xDrive;
+        drive.target = value;
+        body.xDrive = drive;
+    }
+
     public void SetHomePosition() // set current joint positions as home position
     {
         for (int i = 0; i < jointList.Count; i++)
         {
-            jointPositions[i] = jointList[i].transform.localRotation.eulerAngles.y;
+            jointPositions[i] = jointList[i].GetComponent<ArticulationBody>().xDrive.target;
+            Debug.Log("Saving target"+jointPositions[i]);
         }
     }
 
@@ -286,7 +275,8 @@ public class ProcessUrdf : MonoBehaviour
     {
         for (int i = 0; i < jointList.Count; i++)
         {
-            jointList[i].transform.localRotation = Quaternion.Euler(0, (float)jointPositions[i], 0);
+            setJoint(jointList[i].GetComponent<ArticulationBody>(),(float) jointPositions[i]);
+            Debug.Log("resetting target"+jointPositions[i]);
         }
     }
 
