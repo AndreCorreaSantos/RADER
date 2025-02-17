@@ -54,7 +54,7 @@ namespace Unity.VRTemplate
 
         [SerializeField]
         [Tooltip("Articulation body that this knob controls")]
-       public  ArticulationBody m_ArticulationBody = null;
+        public ArticulationBody m_ArticulationBody = null;
         
         UnityEngine.XR.Interaction.Toolkit.Interactors.IXRSelectInteractor m_Interactor;
         float m_Value = 0.0f;
@@ -82,7 +82,7 @@ namespace Unity.VRTemplate
                 {
                     var drive = m_ArticulationBody.xDrive;
                     drive.target = m_Value;
-                    m_ArticulationBody.xDrive = drive; // REVIEW; if the axis is not x, does it break?
+                    m_ArticulationBody.xDrive = drive;
                 }
             }
         }
