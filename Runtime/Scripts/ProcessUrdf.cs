@@ -36,6 +36,10 @@ public class ProcessUrdf : MonoBehaviour
     private Dictionary<string, double> mimicJointOffsetMap = new Dictionary<string, double>();
     private Dictionary<string, double> mimicJointMultiplierMap = new Dictionary<string, double>();
 
+    public float stiffness = 1000.0f; // REVISE; these values are arbitrary, find accurate values;
+    public float damping = 100.0f;
+    public float forceLimit = 1000.0f;
+
     // Getter for the last link
     public GameObject LastLink
     {
@@ -156,9 +160,6 @@ public class ProcessUrdf : MonoBehaviour
             bool isClampedMotion = articulationBody.xDrive.upperLimit - articulationBody.xDrive.lowerLimit < 360;
             // bool isClampedMotion = (articulationBody.xDrive.upperLimit != 0) && (articulationBody.xDrive.lowerLimit != 0);
             Tuple<float, float> jointLimit = new Tuple<float, float>(articulationBody.xDrive.lowerLimit, articulationBody.xDrive.upperLimit);
-            // Debug.LogAssertion("Joint " + obj.name + " has 0 range of motion, setting to 360");
-            // Debug.LogError("Joint " + obj.name + " upper limit: " + articulationBody.xDrive.upperLimit + " lower limit: " + articulationBody.xDrive.lowerLimit);
-            // Debug.LogError("Joint " + obj.name + " isClampedMotion: " + isClampedMotion);
 
 
             if (articulationBody.xDrive.upperLimit - articulationBody.xDrive.lowerLimit == 0 && articulationBody.jointType == ArticulationJointType.RevoluteJoint) {
@@ -216,15 +217,26 @@ public class ProcessUrdf : MonoBehaviour
             child.transform.parent = knobParent.transform;
 
             // zero out child's local position and rotation
-            // child.transform.localPosition = Vector3.zero;
-            // child.transform.localRotation = Quaternion.identity;
+            child.transform.localPosition = Vector3.zero;
+            child.transform.localRotation = Quaternion.identity;
 
-            // // Add IK components to the child, and add references to the list
+            // Add IK components to the child, and add references to the list
             CCDIKJoint ik = child.AddComponent<CCDIKJoint>();
             ik.axis = new Vector3(0, 1, 0);
 
             // // Add the XRKnobAlt
             XRKnobAlt knob = knobParent.AddComponent<XRKnobAlt>();
+
+
+            // add the set body component
+            SetBody setBody = knobParent.AddComponent<SetBody>(); // REVIEW; need to assign correct components here
+            ArticulationBody artBody = child.GetComponent<ArticulationBody>();
+
+            setBody.body = artBody;
+            // Register art body SET to knob onvalue change call
+
+            knob.m_OnValueChange.AddListener(setBody.Set);
+
             knob.uniqueID = i;
             // knob.clampedMotion = clampedMotionList[i];
             knob.jointMinAngle = jointLimits[i].Item1;
