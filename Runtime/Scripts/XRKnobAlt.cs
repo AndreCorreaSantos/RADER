@@ -51,6 +51,10 @@ namespace Unity.VRTemplate
         [SerializeField]
         [Tooltip("Events to trigger when the knob is rotated")]
         public UnityEvent<float> m_OnValueChange = new UnityEvent<float>();
+
+        [SerializeField]
+        [Tooltip("Articulation body that this knob controls")]
+       public  ArticulationBody m_ArticulationBody = null;
         
         UnityEngine.XR.Interaction.Toolkit.Interactors.IXRSelectInteractor m_Interactor;
         float m_Value = 0.0f;
@@ -73,9 +77,13 @@ namespace Unity.VRTemplate
             set
             {
                 m_Value = Mathf.Clamp(value, m_JointMinAngle, m_JointMaxAngle); 
-                // SetKnobRotation(m_Value);
-                // UpdateRobotJointAngle(m_Value); // REVIEW; obsolete
                 m_OnValueChange.Invoke(m_Value);
+                if (m_ArticulationBody != null)
+                {
+                    var drive = m_ArticulationBody.xDrive;
+                    drive.target = m_Value;
+                    m_ArticulationBody.xDrive = drive; // REVIEW; if the axis is not x, does it break?
+                }
             }
         }
         

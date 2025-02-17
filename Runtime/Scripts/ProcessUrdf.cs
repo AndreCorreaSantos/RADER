@@ -36,7 +36,7 @@ public class ProcessUrdf : MonoBehaviour
     private Dictionary<string, double> mimicJointOffsetMap = new Dictionary<string, double>();
     private Dictionary<string, double> mimicJointMultiplierMap = new Dictionary<string, double>();
 
-    public float stiffness = 1000.0f; // REVISE; these values are arbitrary, find accurate values;
+    public float stiffness = 1000.0f; // REVIEW; these values are arbitrary, find accurate values;
     public float damping = 100.0f;
     public float forceLimit = 1000.0f;
 
@@ -101,6 +101,18 @@ public class ProcessUrdf : MonoBehaviour
         foreach (Transform child in obj.transform)
         {
             TraverseAndModify(child.gameObject);
+        }
+    }
+
+    KnobAxis FindAxis(ArticulationBody body){
+        if (body.xDrive.lowerLimit != 0 || body.xDrive.upperLimit != 0){
+            return KnobAxis.X;
+        }
+        else if (body.yDrive.lowerLimit != 0 || body.yDrive.upperLimit != 0){
+            return KnobAxis.Y;
+        }
+        else{
+            return KnobAxis.Z;
         }
     }
 
@@ -208,24 +220,21 @@ public class ProcessUrdf : MonoBehaviour
 
             // // Add the XRKnobAlt
             XRKnobAlt knob = knobParent.AddComponent<XRKnobAlt>();
-
+            
 
             // add the set body component
-            SetBody setBody = knobParent.AddComponent<SetBody>(); // REVIEW; need to assign correct components here
+            // SetBody setBody = knobParent.AddComponent<SetBody>(); // REVIEW; need to assign correct components here
             ArticulationBody artBody = child.GetComponent<ArticulationBody>();
+            knob.m_ArticulationBody = artBody;
 
-            setBody.body = artBody;
-            // Register art body SET to knob onvalue change call
-
-            knob.m_OnValueChange.AddListener(setBody.Set);
+            knob.rotationAxis = FindAxis(artBody);
+            
 
             knob.uniqueID = i;
             // knob.clampedMotion = clampedMotionList[i];
             knob.jointMinAngle = jointLimits[i].Item1;
             knob.jointMaxAngle = jointLimits[i].Item2;
             knob.rotationAxis = knobAxis;
-
-            // Debug.LogError("Parent " + knobParent.name + " Joint " + knob.name + " upper limit: " + knob.maxAngle + " lower limit: " + knob.minAngle);
 
 
             knob.handle = child.transform;
@@ -267,7 +276,7 @@ public class ProcessUrdf : MonoBehaviour
         for (int i = 0; i < jointList.Count; i++)
         {
             jointPositions[i] = jointList[i].GetComponent<ArticulationBody>().xDrive.target;
-            Debug.Log("Saving target"+jointPositions[i]);
+
         }
     }
 
@@ -276,7 +285,6 @@ public class ProcessUrdf : MonoBehaviour
         for (int i = 0; i < jointList.Count; i++)
         {
             setJoint(jointList[i].GetComponent<ArticulationBody>(),(float) jointPositions[i]);
-            Debug.Log("resetting target"+jointPositions[i]);
         }
     }
 
