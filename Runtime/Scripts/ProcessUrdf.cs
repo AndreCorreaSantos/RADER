@@ -146,7 +146,7 @@ public class ProcessUrdf : MonoBehaviour
             // Do not delete CollisionHaptics scripts
             if (script.GetType().Name == "CollisionHaptics") continue;
 
-            DestroyImmediate(script); 
+            // DestroyImmediate(script); // REVIEW; For now keeping all urdf related scripts.
         }
 
         var articulationBody = obj.GetComponent<ArticulationBody>();
@@ -167,13 +167,13 @@ public class ProcessUrdf : MonoBehaviour
                 jointLimit = new Tuple<float, float>(0, 360);
             }
             
-            DestroyImmediate(articulationBody);
+            // DestroyImmediate(articulationBody); // REVIEW; no longer removing articulation bodies
 
-            // add rigidbody
-            var rb = obj.AddComponent<Rigidbody>();
-            rb.mass = 1.0f;
-            rb.useGravity = false;
-            rb.isKinematic = true;
+            // // add rigidbody
+            // var rb = obj.AddComponent<Rigidbody>();
+            // rb.mass = 1.0f;
+            // rb.useGravity = false;
+            // rb.isKinematic = true;
             // if fixedJoint we dont add XRGrabInteractable
             if(!fixedJoint)
             {
@@ -188,7 +188,7 @@ public class ProcessUrdf : MonoBehaviour
                 jointLimits.Add(jointLimit);
             }
 
-            if (grabJoint == null) {
+            if (grabJoint == null) { // REVIEW; not sure what this logic is for
                 MeshCollider meshCollider = obj.GetComponentInChildren<MeshCollider>();
                 if (meshCollider != null) {
                     grabJoint = obj;
