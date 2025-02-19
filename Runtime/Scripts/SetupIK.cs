@@ -31,7 +31,7 @@ public class SetupIK : MonoBehaviour
             Debug.LogError("No IKJoint found in children, error in prefabSetup");
             return;
         }
-        setupIK();
+        // setupIK(); review, this does not seem to be changing anything.
     }
 
 
@@ -40,12 +40,14 @@ public class SetupIK : MonoBehaviour
         if (obj == null) return;
         if(obj.GetComponent<XRKnobAlt>() != null)
         {
+            Debug.Log("reaching 8");
             lastChild = obj.gameObject;
             xrKnobs.Add(obj.GetComponent<XRKnobAlt>());
             nameToNumber.Add(new Tuple<string, int>(obj.name, xrKnobs.Count - 1));
         }
         if(obj.GetComponent<CCDIKJoint>() != null)
         {
+            Debug.Log("reaching 7");
             ikJoints.Add(obj.GetComponent<CCDIKJoint>());
         }
         
@@ -65,6 +67,7 @@ public class SetupIK : MonoBehaviour
 
             CCDIK ccdIK = (CCDIK)ikSolver;
             
+            Debug.Log("reaching 10");
             ccdIK.joints = ikJoints.ToArray();
             ccdIK.knobs = xrKnobs.ToArray();
             ccdIK.Tooltip = Tooltip;
@@ -73,6 +76,7 @@ public class SetupIK : MonoBehaviour
 
     public void SetJointAngles(float[] angles)
     {
+        Debug.Log("reaching 3");
         if (xrKnobs != null && xrKnobs.Count == ikJoints.Count && angles.Length == ikJoints.Count)
         {
             for (int j = 0; j < angles.Length; j++)
@@ -120,6 +124,7 @@ public class SetupIK : MonoBehaviour
         // } else {
         //     Debug.LogError("Invalid number of angles or knobs"); // REVIEW; This logic is already implemented in the XRKnobAlt
         // }
+        Debug.Log("Reaching here");
         xrKnobs[jointIndex].jointAngle= jointAngle;
     }
 
@@ -136,7 +141,8 @@ public class SetupIK : MonoBehaviour
                 jointName = "KnobParent_" + jointName;
                 try {
                     int jointIndex = nameToNumber.Find(x => x.Item1 == jointName).Item2;
-                    SetJointAngle(jointIndex, jointAngle);
+                    // SetJointAngle(jointIndex, jointAngle);
+                    xrKnobs[jointIndex].jointAngle = jointAngle;
                 } catch (Exception)
                 {
                     Debug.LogError("Joint not found: " + jointName);

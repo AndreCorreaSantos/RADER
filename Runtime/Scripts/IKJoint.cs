@@ -58,6 +58,7 @@ public class CCDIKJoint : MonoBehaviour
     }
 
     public void Evaluate(Transform ToolTip, Quaternion targetRotation, Vector3 targetPosition, bool rotateToDirection = false) {
+        Debug.Log("reaching 8");
         prevAngle = transform.localEulerAngles.y;
 
         // Rotate the assembly so the tooltip better matches the target position/direction
