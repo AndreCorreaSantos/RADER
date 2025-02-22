@@ -31,7 +31,7 @@ public class SetupIK : MonoBehaviour
             Debug.LogError("No IKJoint found in children, error in prefabSetup");
             return;
         }
-        // setupIK(); review, this does not seem to be changing anything.
+        setupIK(); 
     }
 
 
