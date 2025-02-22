@@ -24,7 +24,8 @@ public class CCDIK : IKSolver {
             Debug.Log("reaching 9");
             joints[j].Evaluate(Tooltip, ori, pos, false);
             float diff = AngleDifference(joints[j].prevAngle, joints[j].transform.localEulerAngles.y);
-            knobs[j].jointAngle = knobs[j].jointAngle - diff;
+            Debug.Log("Difference: " + diff);
+            knobs[j].jointAngle = knobs[j].jointAngle + diff;
             angles[j] = knobs[j].jointAngle;
         }
 
