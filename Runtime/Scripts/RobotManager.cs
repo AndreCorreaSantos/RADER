@@ -35,7 +35,6 @@ public class RobotManager : MonoBehaviour
     public void SetTargetEEPose(Transform target)
     {
         float[] currentAngles = GetJointAngles();
-        Debug.Log("reaching 1");
         // Calculate the joint angles to reach the target
         float[] jointAngles = ikSolver.InverseKinematics(target.position, target.rotation, currentAngles, urdfModel.transform);
         if (jointAngles == null)
@@ -48,7 +47,6 @@ public class RobotManager : MonoBehaviour
 
     public void SetTargetEEPose(Vector3 position, Quaternion rotation)
     {
-        Debug.Log("reaching 12");
         float[] currentAngles = GetJointAngles();
 
         float[] jointAngles = ikSolver.InverseKinematics(position, rotation, currentAngles, urdfModel.transform);
@@ -62,7 +60,6 @@ public class RobotManager : MonoBehaviour
 
     public Transform GetEEPose()
     {
-        Debug.Log("reaching 0");
         return processUrdf.LastLink.transform;
     }
 
@@ -73,7 +70,6 @@ public class RobotManager : MonoBehaviour
 
     public void SetJointAngles(float[] jointAngles)
     {
-        Debug.Log("reaching 2");
         urdfModel.GetComponent<SetupIK>().SetJointAngles(jointAngles);
     }
 

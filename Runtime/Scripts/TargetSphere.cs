@@ -40,7 +40,6 @@ public class TargetSphere : MonoBehaviour
         grabInteractable.selectExited.AddListener((SelectExitEventArgs interactor) => {
             m_active = false;
         });
-        Debug.Log("reaching -1");
         // Set the target to the end effector
         Transform ee = robotManager.GetEEPose();
         targetPos = ee.position;

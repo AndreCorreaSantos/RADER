@@ -51,7 +51,6 @@ public class ProcessUrdf : MonoBehaviour
         ColorAffordanceThemeDatumProperty affordanceThemeDatum,
         IKSolver ikSolver=null, KnobAxis knobAxis=KnobAxis.Y, bool grabBase=false)
     {
-        Debug.Log("reaching 6");
         if (urdfModel == null)
         {
             Debug.LogError("No URDF model found, error in prefabSetup");
